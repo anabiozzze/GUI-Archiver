@@ -6,7 +6,7 @@ import java.util.zip.ZipOutputStream;
 
 public class ZipUtil {
     // путь, по которому будет создан новый архив
-    private static String archivePath = "/Users/andreimironov/Desktop/folder/archive.zip";
+    private static String archivePath = "archive.zip";
 
     public static void zipFiles(File ... files) {
 
@@ -32,7 +32,7 @@ public class ZipUtil {
         }
     }
 
-    public static void write(InputStream in, OutputStream out) throws IOException {
+    private static void write(InputStream in, OutputStream out) throws IOException {
 
         // создадим буфер для считанных из файлового потока байт
         byte[] buffer = new byte[1024];

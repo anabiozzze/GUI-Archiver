@@ -43,7 +43,7 @@ public class UnZip {
         }
     }
 
-    public static void write(InputStream in, OutputStream out) throws IOException {
+    private static void write(InputStream in, OutputStream out) throws IOException {
         // создадим буфер для считанных из файлового потока байт
         byte[] buffer = new byte[1024];
 
@@ -57,7 +57,7 @@ public class UnZip {
         out.close();
     }
 
-    public static boolean isReady(String path) {
+    private static boolean isReady(String path) {
         if (path.length() <= 0) {
             System.out.println("Path is too short");
             return false;
