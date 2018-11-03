@@ -17,7 +17,7 @@ public class ZipUtil {
             for (File file : files) {
                 // zip-поток принимает на сжатие только сущности zipEntry - сделаем такую сущность из переданного
                 // файла и "скормим" её zip-потоку
-                ZipEntry entry = new ZipEntry(file.getPath());
+                ZipEntry entry = new ZipEntry(file.getName());
                 outputStream.putNextEntry(entry);
 
                 // преобразуем полученный файл в поток и запишем его в outputStream, который положит его байты
