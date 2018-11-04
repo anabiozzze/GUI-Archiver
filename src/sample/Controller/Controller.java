@@ -5,6 +5,7 @@ import sample.Zip.ZipUtil;
 import java.io.File;
 
 public class Controller {
+    /* Принимаем запросы от класса с интерфейсом и передаем в классы архивации \ разархивации */
 
     public Controller() {
     }

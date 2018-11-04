@@ -4,25 +4,38 @@ import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import sample.Controller.Controller;
 
+import java.awt.*;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+
 public class MainView extends Application {
-    // класс отвечает за все элементы интерфейса программы
+    /* Класс отвечвет за все элементы интерфейса программы и их расположение
+    *  Класс не обращается напрямую к классам архивации, делая это через конроллер */
+
     private Stage stage;
     private Group group;
     private Scene scene;
     BorderPane pane;
+    VBox vBox;
     private String initialFile;
     private TextField textField;
     private HBox hb;
@@ -40,6 +53,13 @@ public class MainView extends Application {
         pane = new BorderPane();
         pane.setMinSize(600, 200);
         pane.setStyle("-fx-background-color: lightgrey");
+
+        // привяжем размеры основной области к размерам окна программы, чтобы все масштабировалось вместе
+        pane.prefHeightProperty().bind(scene.heightProperty());
+        pane.prefWidthProperty().bind(scene.widthProperty());
+
+        // пока отключим масшитабирование окна программы
+        primaryStage.setResizable(false);
 
         // присваиваем окну заголовок и запускаем
         primaryStage.setTitle("Archiver MegaJet 3000");
@@ -71,6 +91,10 @@ public class MainView extends Application {
     }
 
     private void showElements() {
+
+        vBox = new VBox();
+        showMenu();
+
         // по клику кнопки открываем окно выбора файла
         Button button = new Button("Выберите файл");
         button.setOnAction(new EventHandler<ActionEvent>() {
@@ -89,8 +113,10 @@ public class MainView extends Application {
         hb.setSpacing(10);
 
         // задаем отступ для элементов основной области, чтобы не прижимались к краям окна
-        BorderPane.setMargin(hb, new Insets(10, 10, 10, 10));
-        pane.setTop(hb);
+        BorderPane.setMargin(hb, new Insets(40, 10, 10, 10));
+        vBox.getChildren().add(hb); vBox.setSpacing(5);
+        BorderPane.setMargin(vBox, new Insets(0, 0, 10, 10));
+        pane.setTop(vBox);
 
         // поле с большим комментарием, некликабельное - создаем и добавляем в основную область
         TextArea area = new TextArea("Пожалуйста, выберите нужный файл, директорию или архив. " +
@@ -98,8 +124,8 @@ public class MainView extends Application {
                 "в зависимости от того, что вам требуется. Результат операции появится в той же" +
                 " директории, что и выбранный файл.");
         area.setDisable(true);
-        area.setMinSize(527, 100);
-        area.setMaxSize(527, 100);
+        area.setMinSize(527, 80);
+        area.setMaxSize(527, 80);
         area.setStyle("-fx-background-color: lightgrey");
 
         // разместим текстовое поле слева, настроим отступы и автоперенос текста
@@ -142,8 +168,111 @@ public class MainView extends Application {
             }
         });
 
+        // разместим наши кнопки снизу, с равномерным отступом от края и добавим всё это в основное поле
         BorderPane.setMargin(hBox, new Insets(10, 10, 10, 10));
         pane.setBottom(hBox);
+
+    }
+
+    public void showMenu() {
+        MenuBar bar1 = new MenuBar();
+        MenuBar bar2 = new MenuBar();
+        MenuBar bar3 = new MenuBar();
+
+        Menu donate = new Menu("Donate");
+        Menu help = new Menu("Help");
+        Menu menu = new Menu("");
+
+        MenuItem donateItem = new MenuItem("take my money");
+        MenuItem about = new MenuItem("about program");
+        MenuItem trouble = new MenuItem("help");
+
+        donate.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                try {
+                    Desktop d = Desktop.getDesktop();
+                    d.browse(new URI("https://www.redcross.org/donate/donation.html/"));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (URISyntaxException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        about.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+
+                Group root = new Group();
+                Stage stage = new Stage();
+                stage.setTitle("about program");
+
+                TextArea area = new TextArea("Программа не является полноценным продуктом и едва ли будет запущена" +
+                        " кем-то, кроме её разработчика. Цель программы - отработать применение графического " +
+                        "интерфейса на практике. \n\n" +
+                        "Тем не менее, программа действительно должна корректно архивировать и распаковывать файлы.");
+
+                area.setWrapText(true);
+                area.setDisable(true);
+                area.setMinSize(400, 150);
+                area.setMaxSize(400, 150);
+                area.setStyle("-fx-background-color: lightgrey");
+
+                root.getChildren().add(area);
+                root.setStyle("-fx-background-color: lightgrey");
+
+                stage.setScene(new Scene(root, 400, 150));
+                stage.setResizable(false);
+                stage.show();
+
+            }
+        });
+
+        trouble.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+
+                Group root = new Group();
+                Stage stage = new Stage();
+                stage.setTitle("help");
+
+                TextArea area = new TextArea("При возникновении сложностей в работе: \n" +
+                        "1. Выключите программу; \n" +
+                        "2. Повторно включите программу; \n" +
+                        "3. Всё должно работать.");
+
+                area.setDisable(true);
+                area.setMinSize(300, 150);
+                area.setMaxSize(300, 150);
+                area.setStyle("-fx-background-color: lightgrey");
+
+                root.getChildren().add(area);
+                root.setStyle("-fx-background-color: lightgrey");
+
+                stage.setScene(new Scene(root, 300, 150));
+                stage.setResizable(false);
+                stage.show();
+
+            }
+        });
+
+        donate.getItems().add(donateItem);
+        help.getItems().addAll(about, trouble);
+
+        bar1.getMenus().add(donate); bar1.setStyle("-fx-background-color: gainsboro");
+        bar2.getMenus().add(help); bar2.setStyle("-fx-background-color: gainsboro");
+        bar3.getMenus().add(menu); bar3.setStyle("-fx-background-color: gainsboro");
+
+        bar3.setMinSize(444, bar1.getHeight());
+
+        HBox hBox = new HBox();
+        hBox.getChildren().addAll(bar3, bar1, bar2);
+        hBox.setAlignment(Pos.BASELINE_RIGHT);
+
+        vBox.getChildren().add(hBox);
+
 
     }
 
